@@ -315,11 +315,11 @@ if (sizeof($parms)) {
 }
 
 function display_help() {
-        echo "VAE interface counters v 0.43\n";
+        echo "VAE interface counters v 0.52\n";
         echo "Usage for SNMP v2\n";
-        echo "pppoetraffic.php --lns --snmpcommunity --snmpversion --username\n";
+        echo "pppoetraffic.php --lns=<hostname> --sc=<snmp_community> --sv=<snmp_version> --username=<PPPoE_UserName>\n";
         echo "Usage for SNMP v3\n";
-        echo "(todo) pppoetraffic.php --lns --snmpcommunity --snmpversion --username\n";
+        echo "pppoetraffic.php --lns=<hostname> --sc=<snmp_community> --sv=<snmp_version> --username=<PPPoE_UserName> --su=<snmp_username> --sp=<snmp_password> --sap=<snmp_auth_protocol> --spp=<snmp_priv_protocol> --spassphr=<snmp_priv_passphrase>\n";
 }
 
 ?>
