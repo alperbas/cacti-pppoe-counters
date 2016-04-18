@@ -1,3 +1,5 @@
 # cacti-pppoe-counters
 
-Get interface counters from virtual interfaces without resetting data.
+Execute as a cacti script/command.
+
+Get interface counters from virtual interfaces without interruption.
