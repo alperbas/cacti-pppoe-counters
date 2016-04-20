@@ -10,7 +10,7 @@ if (!isset($_SERVER["argv"][0]) || isset($_SERVER['REQUEST_METHOD'])  || isset($
 $no_http_headers = true;
 
 // external functions
-include(dirname(__FILE__)."/../include/global.php");
+include_once(dirname(__FILE__)."/../include/global.php");
 include_once(dirname(__FILE__) . "/../lib/snmp.php");
 
 //vars
