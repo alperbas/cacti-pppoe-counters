@@ -190,63 +190,16 @@ function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spass
 	if (sizeof($parms)) {
 		/* setup defaults */
 		$lns			= ''; //arg
-		$snmpcommunity	= ''; //arg
-		$snmpversion	= ''; //arg
 		$username		= ''; //arg
 		// todo
-		$snmp['version']    = '';
-		$snmp['community']  = '';
-		$snmp['username']   = '';
-		$snmp['password']   = '';
-		$snmp['authproto']  = '';
-		$snmp['privacyproto'] = '';
-		$snmp['passphrase'] = '';
+		$snmp['version']    = $sv;
+		$snmp['community']  = $sc;
+		$snmp['username']   = $su;
+		$snmp['password']   = $sp;
+		$snmp['authproto']  = $sap;
+		$snmp['privacyproto'] = $spp;
+		$snmp['passphrase'] = $spassphr;
 
-		foreach($parms as $parameter) {
-			@list($arg, $value) = @explode("=", $parameter);
-			switch ($arg) {
-				case "--sv":
-					$snmp['version'] = trim($value);
-					if ($snmp['version'] == '2') {
-						$snmp['version'] = '2c';
-					}
-					break;
-				case "--sc":
-					$snmp['community'] = trim($value);
-					break;
-				case "--lns":
-					$lns = trim($value);
-					break;
-				case "--username":
-					$username = trim($value);
-					break;
-				case "--su":
-					$snmp['username'] = trim($value);
-					break;
-				case "--sp":
-					$snmp['password'] = trim($value);
-					break;
-				case "--sap":
-					$snmp['authproto'] = trim($value);
-					break;
-				case "--spp":
-					$snmp['privacyproto'] = trim($value);
-					break;
-				case "--spassphr":
-					$snmp['passphrase'] = trim($value);
-					break;
-				case "--version":
-				case "-V":
-				case "-H":
-				case "--help":
-					ss_ppoetraffic_display_help();
-					exit(0);
-				default:
-					echo "ERROR: Invalid Argument: ($arg)\n\n";
-					ss_ppoetraffic_display_help();
-					exit(1);
-			}
-		}
 		if ($debug == 1) {
 			if ($snmp['version'] == '2c') {
 				ss_ppoetraffic_LOGGER('echo', "Query variables: ".$lns." ".$snmp['version']." ".$username."\nParameters: ".$snmp['community']."\n");
