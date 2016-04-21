@@ -183,11 +183,6 @@ function ss_ppoetraffic_LOGGER ($type, $log) {
 
 function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spassphr) {
 
-	/* process calling arguments */
-	$parms = $_SERVER["argv"];
-	array_shift($parms);
-
-	if (sizeof($parms)) {
 		/* setup defaults */
 		$lns			= ''; //arg
 		$username		= ''; //arg
@@ -273,10 +268,6 @@ function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spass
 		$counters = ss_ppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
 		echo "in_traffic:".$counters['out']." out_traffic:".$counters['in']."\n";
 
-	} else {
-			ss_ppoetraffic_display_help();
-			exit(0);
-	}
 }
 
 function ss_ppoetraffic_display_help() {
