@@ -181,9 +181,26 @@ function ss_ppoetraffic_LOGGER ($type, $log) {
     }
 }
 
+function ss_ppoetrafficget ($hostid, $snmpversion, $username) {
+    global $config;
+    if ($snmpversion == '2') {
+        $snmp['version'] = '2c';
+        $snmp['community'] = db_fetch_cell("SELECT snmp_community FROM host WHERE hostid = '$hostid';");
+        return $snmp['community'];
+    } elseif ($snmpversion == '3') {
+        $snmp['version']    = '3';
+        $snmp['username'] = db_fetch_cell("SELECT snmp_username FROM host WHERE hostid = '$hostid';");
+        $snmp['password'] = db_fetch_cell("SELECT snmp_password FROM host WHERE hostid = '$hostid';");
+        $snmp['authproto'] = db_fetch_cell("SELECT snmp_auth_protocol FROM host WHERE hostid = '$hostid';");
+        $snmp['privacyproto'] = db_fetch_cell("SELECT snmp_priv_protocol FROM host WHERE hostid = '$hostid';");
+        $snmp['passphrase'] = db_fetch_cell("SELECT snmp_priv_passphrase FROM host WHERE hostid = '$hostid';");
+        return $snmp['username']$snmp['password'];
+    }
+}
+
 function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spassphr) {
 
-        //global $config;
+        global $config;
         global $debug;
 		/* setup defaults */
 		//$lns			= ''; //arg
@@ -274,7 +291,7 @@ function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spass
 		// Get interface counters.
 		ss_ppoetraffic_LOGGER('file', "Get Request on $lns for $username");
 		$counters = ss_ppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
-		return "in_traffic:$counters['out'] out_traffic:$counters['in']";
+		return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
         exit(0);
 
 }
