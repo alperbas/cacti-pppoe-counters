@@ -238,7 +238,8 @@ function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spass
 			if ($debug == 1) {
 				ss_ppoetraffic_LOGGER('echo', "User not found, exit.\n");
 			}
-			echo "in_traffic:0 out_traffic:0\n";
+			//echo "in_traffic:0 out_traffic:0\n";
+            return "in_traffic:0 out_traffic:0";
 			exit(1);
 		}
 
@@ -273,7 +274,8 @@ function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spass
 		// Get interface counters.
 		ss_ppoetraffic_LOGGER('file', "Get Request on $lns for $username");
 		$counters = ss_ppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
-		echo "in_traffic:".$counters['out']." out_traffic:".$counters['in']."\n";
+		return "in_traffic:$counters['out'] out_traffic:$counters['in']";
+        exit(0);
 
 }
 
