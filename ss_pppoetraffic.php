@@ -49,8 +49,11 @@ function ss_ppoetraffic_DBCREATETABLE ($table) {
 
 function ss_ppoetraffic_CHECKUSER ($lns, $user) {
     // check if user exists in db
-    $result = mysqli_fetch_assoc(ss_ppoetraffic_DBCON("SELECT DISTINCT(username) FROM `$lns` WHERE username = '$user' ORDER BY date;"));
-    if ($result['username'] == $user) {
+    global $config
+    $result = db_fetch_cell("SELECT DISTINCT(username) FROM `$lns` WHERE username = '$user' ORDER BY date;");
+    //$result = mysqli_fetch_assoc(ss_ppoetraffic_DBCON("SELECT DISTINCT(username) FROM `".$lns."` WHERE username = '".$user."' ORDER BY date;"));
+    //if ($result['username'] == $user) {
+    if ($result == $user) {
         return 1;
     } else {
          return 0;
