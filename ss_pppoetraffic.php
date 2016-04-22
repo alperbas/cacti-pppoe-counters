@@ -49,9 +49,9 @@ function ss_ppoetraffic_DBCREATETABLE ($table) {
 
 function ss_ppoetraffic_CHECKUSER ($lns, $user) {
     // check if user exists in db
-    global $config;
-    $result['username'] = db_fetch_cell("SELECT DISTINCT(username) FROM `$lns` WHERE username = '$user' ORDER BY date;");
-    //$result = mysqli_fetch_assoc(ss_ppoetraffic_DBCON("SELECT DISTINCT(username) FROM `".$lns."` WHERE username = '".$user."' ORDER BY date;"));
+    //global $config;
+    //$result['username'] = db_fetch_cell("SELECT DISTINCT(username) FROM `$lns` WHERE username = '$user' ORDER BY date;");
+    $result = mysqli_fetch_assoc(ss_ppoetraffic_DBCON("SELECT DISTINCT(username) FROM `".$lns."` WHERE username = '".$user."' ORDER BY date;"));
     if ($result['username'] == $user) {
         return 1;
     } else {
@@ -183,13 +183,16 @@ function ss_ppoetraffic_LOGGER ($type, $log) {
 
 function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spassphr) {
 
-        global $config;
+        //global $config;
         global $debug;
 		/* setup defaults */
 		//$lns			= ''; //arg
 		//$username		= ''; //arg
-		// todo
-		$snmp['version']    = $sv;
+        if ($sv == '2') {
+            $snmp['version'] = '2c';
+        } else {
+            $snmp['version']    = $sv;
+        }
 		$snmp['community']  = $sc;
 		$snmp['username']   = $su;
 		$snmp['password']   = $sp;
@@ -227,9 +230,9 @@ function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spass
 		}
 
 		// Get oid and table update date for username
-		//$ifoid = mysqli_fetch_assoc(ss_ppoetraffic_DBCON("SELECT DISTINCT(oid), date FROM `$lns` WHERE username = '$username' ORDER BY date"));
-        $ifoid['oid'] = db_fetch_cell("SELECT oid FROM `$lns` WHERE username = '$username' ORDER BY date");
-        $ifoid['date'] = db_fetch_cell("SELECT date FROM `$lns` WHERE username = '$username' ORDER BY date");
+		$ifoid = mysqli_fetch_assoc(ss_ppoetraffic_DBCON("SELECT DISTINCT(oid), date FROM `$lns` WHERE username = '$username' ORDER BY date"));
+        //$ifoid['oid'] = db_fetch_cell("SELECT oid FROM `$lns` WHERE username = '$username' ORDER BY date");
+        //$ifoid['date'] = db_fetch_cell("SELECT date FROM `$lns` WHERE username = '$username' ORDER BY date");
 		if (is_null($ifoid['oid'])) {
 			// username is not connected
 			if ($debug == 1) {
