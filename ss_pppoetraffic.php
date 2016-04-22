@@ -181,23 +181,23 @@ function ss_pppoetraffic_LOGGER ($type, $log) {
     }
 }
 
-function ss_pppoetrafficget ($hostid, $snmpversion, $username) {
+function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     global $config;
     global $debug;
 
     //get variables
     if ($snmpversion == '2') {
         $snmp['version'] = '2c';
-        $snmp['community'] = db_fetch_cell("SELECT snmp_community FROM host WHERE id = '$hostid'", FALSE);
+        $snmp['community'] = db_fetch_cell("SELECT snmp_community FROM host WHERE hostname = '$hostname'", FALSE);
     } elseif ($snmpversion == '3') {
         $snmp['version'] = '3';
-        $snmp['username'] = db_fetch_cell("SELECT snmp_username FROM host WHERE id = '$hostid';");
-        $snmp['password'] = db_fetch_cell("SELECT snmp_password FROM host WHERE id = '$hostid';");
-        $snmp['authproto'] = db_fetch_cell("SELECT snmp_auth_protocol FROM host WHERE id = '$hostid';");
-        $snmp['privacyproto'] = db_fetch_cell("SELECT snmp_priv_protocol FROM host WHERE id = '$hostid';");
-        $snmp['passphrase'] = db_fetch_cell("SELECT snmp_priv_passphrase FROM host WHERE id = '$hostid';");
+        $snmp['username'] = db_fetch_cell("SELECT snmp_username FROM host WHERE hostname = '$hostname';");
+        $snmp['password'] = db_fetch_cell("SELECT snmp_password FROM host WHERE hostname = '$hostname';");
+        $snmp['authproto'] = db_fetch_cell("SELECT snmp_auth_protocol FROM host WHERE hostname = '$hostname';");
+        $snmp['privacyproto'] = db_fetch_cell("SELECT snmp_priv_protocol FROM host WHERE hostname = '$hostname';");
+        $snmp['passphrase'] = db_fetch_cell("SELECT snmp_priv_passphrase FROM host WHERE hostname = '$hostname';");
     }
-    $lns = db_fetch_cell("SELECT hostname FROM host WHERE id = '$hostid';");
+    $lns = $hostname;
 
     if ($debug == 1) {
         if ($snmp['version'] == '2c') {
