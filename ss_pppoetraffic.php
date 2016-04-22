@@ -1,4 +1,3 @@
-#!/usr/bin/php -q
 <?php
 
 /* do NOT run this script through a web browser */
@@ -9,7 +8,7 @@ if (!isset($_SERVER["argv"][0]) || isset($_SERVER['REQUEST_METHOD'])  || isset($
 /* We are not talking to the browser */
 $no_http_headers = true;
 /* display No errors */
-error_reporting(E_ERROR);
+//error_reporting(E_ERROR);
 
 // external functions
 include_once(dirname(__FILE__) . "/../include/global.php");
@@ -19,7 +18,6 @@ if (!isset($called_by_script_server)) {
    array_shift($_SERVER["argv"]);
    print call_user_func_array("ss_ppoetraffic", $_SERVER["argv"]);
 }
-
 
 
 //vars
