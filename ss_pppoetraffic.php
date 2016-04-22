@@ -181,6 +181,7 @@ function ss_ppoetraffic_LOGGER ($type, $log) {
 
 function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spassphr) {
 
+        global $debug;
 		/* setup defaults */
 		$lns			= ''; //arg
 		$username		= ''; //arg
