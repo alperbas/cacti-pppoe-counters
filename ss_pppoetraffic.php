@@ -186,8 +186,8 @@ function ss_ppoetraffic ($lns, $sc, $sv, $username, $su, $sp, $sap, $spp, $spass
         global $config;
         global $debug;
 		/* setup defaults */
-		$lns			= ''; //arg
-		$username		= ''; //arg
+		//$lns			= ''; //arg
+		//$username		= ''; //arg
 		// todo
 		$snmp['version']    = $sv;
 		$snmp['community']  = $sc;
