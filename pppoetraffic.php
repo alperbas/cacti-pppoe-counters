@@ -31,8 +31,8 @@ function DBCON ($sql) {
     $dbusername = "username";
     $dbpassword = "password";
     $dbname = "database";
-    if(is_file('pppoetraffic_vars.php'))
-        include 'pppoetraffic_vars.php';
+    if(is_file(dirname(__FILE__) . "/pppoetraffic_vars.php"))
+        include dirname(__FILE__) . "/pppoetraffic_vars.php";
     $connection = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
     return $connection->query($sql);
 }
