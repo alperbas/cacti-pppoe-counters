@@ -26,10 +26,13 @@ $statustimeout=10;
 
 function DBCON ($sql) {
     // Connect and execute query to DB
-    $dbservername = "localhost";
-    $dbusername = "grapher";
-    $dbpassword = "de6lw36";
-    $dbname = "graph_lns";
+    ## enter db info here or create vars.php
+    $dbservername = "hostname";
+    $dbusername = "username";
+    $dbpassword = "password";
+    $dbname = "database";
+    if(is_file('pppoetraffic_vars.php'))
+        include 'pppoetraffic_vars.php';
     $connection = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
     return $connection->query($sql);
 }
