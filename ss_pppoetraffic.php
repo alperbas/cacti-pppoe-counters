@@ -127,7 +127,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
             return 1;
         case "sessionduration":
             if ($debug == 1) {
-                ss_pppoetraffic_LOGGER('echo', "Starting version ".$snmp['version']." SNMP duration query.\n");
+                ss_pppoetraffic_LOGGER('echo', "Starting version ".$snmp['version']." SNMP duration query for ".$lns."\n");
             }
             // Get ppp session duration and convert to seconds
             if ($snmp['version'] == '2c') {
@@ -142,7 +142,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
             return ss_pppoetraffic_CONVERTTOSECONDS(0, $days, $hours, $minutes, $seconds);
         case "counters":
             if ($debug == 1) {
-                ss_pppoetraffic_LOGGER('echo', "Starting version ".$snmp['version']." SNMP interface query.\n");
+                ss_pppoetraffic_LOGGER('echo', "Starting version ".$snmp['version']." SNMP interface query for ".$lns."\n");
             }
             // Get interface counters.
             if ($snmp['version'] == '2c') {
