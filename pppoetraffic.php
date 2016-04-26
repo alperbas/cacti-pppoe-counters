@@ -11,7 +11,7 @@ $no_http_headers = true;
 
 // external functions
 include_once(dirname(__FILE__)."/../include/global.php");
-include_once(dirname(__FILE__) . "/../lib/snmp.php");
+include_once(dirname(__FILE__)."/../lib/snmp.php");
 
 //vars
 $debug=0;
