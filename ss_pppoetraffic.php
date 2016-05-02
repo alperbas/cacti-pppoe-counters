@@ -290,7 +290,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
 function ss_pppoetraffic_display_help() {
         echo "VAE interface counters for Cacti Script Server v 0.52\n";
         echo "Usage for SNMP v2\n";
-        echo "ppppoetraffic.php <cacti_host_id> <snmp_version> <PPPoE_UserName>\n";
+        echo "ppppoetraffic.php <cacti_hostname> <snmp_version> <PPPoE_UserName>\n";
 }
 
 ?>
