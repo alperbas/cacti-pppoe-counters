@@ -178,7 +178,7 @@ function ss_pppoetraffic_CALCULATEDATEDIFF ($olddate, $newdate) {
 function ss_pppoetraffic_LOGGER ($type, $log) {
     if ($type == 'file') {
         $log = date("Y-m-d H:i:s")." ".$log;
-        $myfile = file_put_contents('/var/www/html/log/ppoe_log.txt', $log.PHP_EOL, FILE_APPEND);
+        $myfile = file_put_contents('/var/www/html/log/pppoe.log', $log.PHP_EOL, FILE_APPEND);
     } elseif ($type == 'echo') {
         echo $log;
     }
