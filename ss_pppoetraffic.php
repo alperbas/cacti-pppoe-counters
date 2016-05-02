@@ -214,7 +214,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     if (ss_pppoetraffic_DBCON("SELECT 1 FROM `$lns` LIMIT 1") == FALSE) { ss_pppoetraffic_DBCREATETABLE($lns); }
 
     // Sleep if table is being updated.
-    usleep(rand(100,1000));
+    usleep(rand(200,1000));
     while (!ss_pppoetraffic_CHECKTABLE($lns)) {
         sleep(1);
     }
@@ -248,6 +248,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         if ($debug == 1) {
             ss_pppoetraffic_LOGGER('echo', "User not found, exit.\n");
         }
+        ss_pppoetraffic_LOGGER('file', "User is missing on $lns for $username - exit.");
         //echo "in_traffic:0 out_traffic:0\n";
         return "in_traffic:0 out_traffic:0";
         exit(1);
