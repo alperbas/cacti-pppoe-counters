@@ -264,8 +264,16 @@ if (sizeof($parms)) {
         while (!CHECKTABLE($lns)) {
             sleep(1);
         }
-        LOGGER('file', "Bulk Request on $lns for $username - user is missing.");
-        SNMPGETDATA("userlist", $snmp, $lns, null);
+        // Update table if it's older than 1 minute
+        $updatediff = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT IFNULL((SELECT DISTINCT(date) FROM graph_lns.`$lns` WHERE date < NOW() - INTERVAL 1 MINUTE) , 0) AS datediff"));
+        if (!$updatediff['datediff'] == 0) {
+            if ($debug == 1) {
+                LOGGER('echo', "Table is older than 1 minute, updating.\n");
+            }
+            echo $updatediff['datediff'];
+            LOGGER('file', "Bulk Request on $lns for $username - user is missing.");
+            SNMPGETDATA("userlist", $snmp, $lns, null);
+        }
     }
 
     // Get oid and table update date for username
