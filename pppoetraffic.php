@@ -265,7 +265,7 @@ if (sizeof($parms)) {
             sleep(1);
         }
         // Update table if it's older than 1 minute
-        $updatediff = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT IFNULL((SELECT DISTINCT(date) FROM graph_lns.`$lns` WHERE date < NOW() - INTERVAL 1 MINUTE) , 0) AS datediff"));
+        $updatediff = mysqli_fetch_assoc(DBCON("SELECT IFNULL((SELECT DISTINCT(date) FROM graph_lns.`$lns` WHERE date < NOW() - INTERVAL 1 MINUTE) , 0) AS datediff"));
         if (!$updatediff['datediff'] == 0) {
             if ($debug == 1) {
                 LOGGER('echo', "Table is older than 1 minute, updating.\n");
