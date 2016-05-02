@@ -224,6 +224,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         if ($debug == 1) {
             ss_pppoetraffic_LOGGER('echo', "User is not in database, starting snmpbulk request.\n");
         }
+        ss_pppoetraffic_LOGGER('file', "User is missing on $lns for $username");
         while (!ss_pppoetraffic_CHECKTABLE($lns)) {
             sleep(1);
         }
@@ -233,7 +234,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
             if ($debug == 1) {
                 ss_pppoetraffic_LOGGER('echo', "Table is older than 1 minute, updating.\n");
             }
-            ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns for $username - user is missing.");
+            ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns for $username");
             ss_pppoetraffic_SNMPGETDATA("userlist", $snmp, $lns, null);
         }
     }
