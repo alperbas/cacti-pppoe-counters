@@ -270,7 +270,6 @@ if (sizeof($parms)) {
             if ($debug == 1) {
                 LOGGER('echo', "Table is older than 1 minute, updating.\n");
             }
-            echo $updatediff['datediff'];
             LOGGER('file', "Bulk Request on $lns for $username - user is missing.");
             SNMPGETDATA("userlist", $snmp, $lns, null);
         }
