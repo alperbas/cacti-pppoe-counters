@@ -169,7 +169,7 @@ function CALCULATEDATEDIFF ($olddate, $newdate) {
 function LOGGER ($type, $log) {
     if ($type == 'file') {
         $log = date("Y-m-d H:i:s")." ".$log;
-        $myfile = file_put_contents('/var/www/html/log/pppoe_log.txt', $log.PHP_EOL, FILE_APPEND);
+        $myfile = file_put_contents('/var/www/html/log/ppoe_log.txt', $log.PHP_EOL, FILE_APPEND);
     } elseif ($type == 'echo') {
         echo $log;
     }
