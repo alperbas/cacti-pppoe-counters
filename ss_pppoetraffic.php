@@ -32,6 +32,7 @@ $statustimeout=10;
 //$path_snmpget  = '/usr/bin/snmpget';
 
 function ss_pppoetraffic_DBCON ($sql) {
+    global $debug
     // Connect and execute query to DB
     ## enter db info here or create vars.php
     $dbservername = "hostname";
@@ -41,7 +42,16 @@ function ss_pppoetraffic_DBCON ($sql) {
     if(is_file(dirname(__FILE__) . "/pppoetraffic_vars.php"))
         include dirname(__FILE__) . "/pppoetraffic_vars.php";
     $connection = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
-    return $connection->query($sql);
+    if (!$debug == 1) {
+        $result = $connection->query($query);
+        if (!$result) {
+            echo "Error executing query: (".$mysqli->errno.") ".$mysqli->error."\n";
+        } else {
+            return $result;
+        }
+    } else {
+        return $connection->query($sql);
+    }
 }
 
 function ss_pppoetraffic_DBCREATETABLE ($table) {
