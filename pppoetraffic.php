@@ -25,6 +25,7 @@ $statustimeout=10;
 //$path_snmpget  = '/usr/bin/snmpget';
 
 function DBCON ($sql) {
+    global $debug;
     // Connect and execute query to DB
     ## enter db info here or create vars.php
     $dbservername = "hostname";
