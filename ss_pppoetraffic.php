@@ -31,7 +31,8 @@ $statustimeout=10;
 //$path_snmpbulkwalk = '/usr/bin/snmpbulkwalk';
 //$path_snmpget  = '/usr/bin/snmpget';
 
-function ss_pppoetraffic_DBCON ($sql) {
+function ss_pppoetraffic_DBCON ($query) {
+    global $debug;
     // Connect and execute query to DB
     ## enter db info here or create vars.php
     $dbservername = "hostname";
@@ -41,20 +42,29 @@ function ss_pppoetraffic_DBCON ($sql) {
     if(is_file(dirname(__FILE__) . "/pppoetraffic_vars.php"))
         include dirname(__FILE__) . "/pppoetraffic_vars.php";
     $connection = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
-    return $connection->query($sql);
+    if (!$debug == 1) {
+        $result = $connection->query($query);
+        if (!$result) {
+            echo "Error executing query: (".$mysqli->errno.") ".$mysqli->error."\n";
+        } else {
+            return $result;
+        }
+    } else {
+        return $connection->query($query);
+    }
 }
 
 function ss_pppoetraffic_DBCREATETABLE ($table) {
     // Create table
-    ss_pppoetraffic_DBCON("CREATE TABLE `$table` ( username varchar(255), oid varchar(255), date varchar(255), uptime varchar(255) );");
-    ss_pppoetraffic_DBCON("INSERT INTO bulk_check (lns, status) VALUES ('$table', '1')");
+    ss_pppoetraffic_DBCON("CREATE TABLE `plugin_pppoe_$table` ( username varchar(255), oid varchar(255), date varchar(255), uptime varchar(255) );");
+    ss_pppoetraffic_DBCON("INSERT INTO plugin_pppoe_bulk_check (lns, status) VALUES ('$table', '1')");
 }
 
 function ss_pppoetraffic_CHECKUSER ($lns, $user) {
     // check if user exists in db
     //global $config;
     //$result['username'] = db_fetch_cell("SELECT DISTINCT(username) FROM `$lns` WHERE username = '$user' ORDER BY date;");
-    $result = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(username) FROM `".$lns."` WHERE username = '".$user."' ORDER BY date;"));
+    $result = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(username) FROM `plugin_pppoe_$lns` WHERE username = '$user' ORDER BY date;"));
     if ($result['username'] == $user) {
         return 1;
     } else {
@@ -66,7 +76,7 @@ function ss_pppoetraffic_CHECKTABLE ($lns) {
     global $debug;
     global $statustimeout;
     // Check if table is ready for update
-    $tableready = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(status), date FROM bulk_check WHERE lns = '$lns';"));
+    $tableready = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(status), date FROM plugin_pppoe_bulk_check WHERE lns = '$lns';"));
     $checkseconds = ss_pppoetraffic_CALCULATEDATEDIFF($tableready['date'], date("Y-m-d H:i:s"));
     if ($debug == 1) {
         ss_pppoetraffic_LOGGER('echo', "Status table ready? Table is ".$tableready['status']." for ".$checkseconds." seconds.\n");
@@ -76,7 +86,7 @@ function ss_pppoetraffic_CHECKTABLE ($lns) {
             ss_pppoetraffic_LOGGER('echo', "Update status timeout expired, resetting status to 1 for $lns.\n");
         }
         ss_pppoetraffic_LOGGER('file', "Update status timeout expired, resetting status to 1 for $lns.");
-        ss_pppoetraffic_DBCON("UPDATE bulk_check SET status = '1', date = NOW() WHERE lns = '$lns';");
+        ss_pppoetraffic_DBCON("UPDATE plugin_pppoe_bulk_check SET status = '1', date = NOW() WHERE lns = '$lns';");
     }
     if ($tableready['status'] == 1) {
         // Ready
@@ -100,7 +110,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
         case "userlist":
             // Lock bulk requests
             ss_pppoetraffic_LOGGER('file', "Update status set zero for $lns");
-            ss_pppoetraffic_DBCON("UPDATE bulk_check SET status = '0', date = NOW() WHERE lns = '$lns';");
+            ss_pppoetraffic_DBCON("UPDATE plugin_pppoe_bulk_check SET status = '0', date = NOW() WHERE lns = '$lns';");
             if ($debug == 1) {
                 ss_pppoetraffic_LOGGER('echo', "Starting version ".$snmp['version']." SNMP bulk query.\n");
             }
@@ -111,7 +121,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
                 $userlist = exec_into_array(cacti_escapeshellcmd($path_snmpbulkwalk)." -O Qn -l authPriv -v ".$snmp['version']." -u ".$snmp['username']." -a ".$snmp['authproto']." -A ".$snmp['password']." -x ".$snmp['privacyproto']." -X ".$snmp['passphrase']." ".cacti_escapeshellarg($lns)." ".cacti_escapeshellarg($userlistoid));
             }
             // Delete previous userlist.
-            ss_pppoetraffic_DBCON("TRUNCATE TABLE `$lns`;");
+            ss_pppoetraffic_DBCON("TRUNCATE TABLE `plugin_pppoe_$lns`;");
             // Fill the table with corporate users.
             foreach($userlist as $line) {
                 @list($ifoid, $user) = @explode("=", $line);
@@ -119,10 +129,10 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
                 @list(, $user) = @explode("\"", $user);
                 @list($user, $realm) = @explode("@", $user);
                 if ( $realm == "netoneadsl" || $realm == "netonesdsl" ) {
-                    ss_pppoetraffic_DBCON("INSERT INTO `$lns` (username, oid, date, uptime) VALUES ('$user', '$ifoid', NOW(), NULL);");
+                    ss_pppoetraffic_DBCON("INSERT INTO `plugin_pppoe_$lns` (username, oid, date, uptime) VALUES ('$user', '$ifoid', NOW(), NULL);");
                 }
             }
-            ss_pppoetraffic_DBCON("UPDATE bulk_check SET status = '1', date = NOW() WHERE lns = '$lns';");
+            ss_pppoetraffic_DBCON("UPDATE plugin_pppoe_bulk_check SET status = '1', date = NOW() WHERE lns = '$lns';");
             ss_pppoetraffic_LOGGER('file', "Update status set one for $lns");
             return 1;
         case "sessionduration":
@@ -211,7 +221,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     }
 
     // check if lns table exists, create if not.
-    if (ss_pppoetraffic_DBCON("SELECT 1 FROM `$lns` LIMIT 1") == FALSE) { ss_pppoetraffic_DBCREATETABLE($lns); }
+    if (ss_pppoetraffic_DBCON("SELECT 1 FROM `plugin_pppoe_$lns` LIMIT 1") == FALSE) { ss_pppoetraffic_DBCREATETABLE($lns); }
 
     // Sleep if table is being updated.
     usleep(rand(200,1000));
@@ -229,8 +239,8 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
             sleep(1);
         }
         // Update table if it's older than 1 minute
-        $updatediff = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT IFNULL((SELECT DISTINCT(date) FROM graph_lns.`$lns` WHERE date < NOW() - INTERVAL 1 MINUTE LIMIT 1) , 0) AS datediff"));
-        if (!$updatediff['datediff'] == 0) {
+        $updatediff = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT IFNULL((SELECT DISTINCT(date) FROM `plugin_pppoe_$lns` WHERE date > NOW() - INTERVAL 1 MINUTE LIMIT 1) , 0) AS datediff"));
+        if ($updatediff['datediff'] == 0) {
             if ($debug == 1) {
                 ss_pppoetraffic_LOGGER('echo', "Table is older than 1 minute, updating.\n");
             }
@@ -240,7 +250,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     }
 
     // Get oid and table update date for username
-    $ifoid = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(oid), date FROM `$lns` WHERE username = '$username' ORDER BY date"));
+    $ifoid = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(oid), date FROM `plugin_pppoe_$lns` WHERE username = '$username' ORDER BY date"));
     //$ifoid['oid'] = db_fetch_cell("SELECT oid FROM `$lns` WHERE username = '$username' ORDER BY date");
     //$ifoid['date'] = db_fetch_cell("SELECT date FROM `$lns` WHERE username = '$username' ORDER BY date");
     if (is_null($ifoid['oid'])) {
@@ -279,7 +289,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         }
         ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns for $username - session is newer.");
         ss_pppoetraffic_SNMPGETDATA("userlist", $snmp, $lns, null);
-        $ifoid = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(oid) FROM `$lns` WHERE username = '$username' ORDER BY date;"));
+        $ifoid = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(oid) FROM `plugin_pppoe_$lns` WHERE username = '$username' ORDER BY date;"));
     }
 
     // Get interface counters.
