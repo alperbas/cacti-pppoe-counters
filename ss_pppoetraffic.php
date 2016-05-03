@@ -32,7 +32,7 @@ $statustimeout=10;
 //$path_snmpget  = '/usr/bin/snmpget';
 
 function ss_pppoetraffic_DBCON ($query) {
-    global $debug
+    global $debug;
     // Connect and execute query to DB
     ## enter db info here or create vars.php
     $dbservername = "hostname";
