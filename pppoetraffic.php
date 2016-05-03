@@ -48,13 +48,14 @@ function DBCON ($sql) {
 
 function DBCREATETABLE ($table) {
     // Create table
-    DBCON("CREATE TABLE `$table` ( username varchar(255), oid varchar(255), date varchar(255), uptime varchar(255) );");
-    DBCON("INSERT INTO bulk_check (lns, status) VALUES ('$table', '1')");
+    DBCON("CREATE TABLE `plugin_pppoe_$table` ( username varchar(255), oid varchar(255), date varchar(255), uptime varchar(255) );");
+    DBCON("CREATE TABLE IF NOT EXISTS `plugin_pppoe_bulk_check` (lns varchar(255), status int(32), date datetime);");
+    DBCON("INSERT INTO plugin_pppoe_bulk_check (lns, status) VALUES ('$table', '1')");
 }
 
 function CHECKUSER ($lns, $user) {
     // check if user exists in db
-    $result = mysqli_fetch_assoc(DBCON("SELECT DISTINCT(username) FROM `$lns` WHERE username = '$user' ORDER BY date;"));
+    $result = mysqli_fetch_assoc(DBCON("SELECT DISTINCT(username) FROM `plugin_pppoe_$lns` WHERE username = '$user' ORDER BY date;"));
     if ($result['username'] == $user) {
         return 1;
     } else {
@@ -66,7 +67,7 @@ function CHECKTABLE ($lns) {
     global $debug;
     global $statustimeout;
     // Check if table is ready for update
-    $tableready = mysqli_fetch_assoc(DBCON("SELECT DISTINCT(status), date FROM bulk_check WHERE lns = '$lns';"));
+    $tableready = mysqli_fetch_assoc(DBCON("SELECT DISTINCT(status), date FROM plugin_pppoe_bulk_check WHERE lns = '$lns';"));
     $checkseconds = CALCULATEDATEDIFF($tableready['date'], date("Y-m-d H:i:s"));
     if ($debug == 1) {
         LOGGER('echo', "Status table ready? Table is ".$tableready['status']." for ".$checkseconds." seconds.\n");
@@ -76,7 +77,7 @@ function CHECKTABLE ($lns) {
             LOGGER('echo', "Update status timeout expired, resetting status to 1 for $lns.\n");
         }
         LOGGER('file', "Update status timeout expired, resetting status to 1 for $lns.");
-        DBCON("UPDATE bulk_check SET status = '1', date = NOW() WHERE lns = '$lns';");
+        DBCON("UPDATE plugin_pppoe_bulk_check SET status = '1', date = NOW() WHERE lns = '$lns';");
     }
     if ($tableready['status'] == 1) {
         // Ready
@@ -100,7 +101,7 @@ function SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
         case "userlist":
             // Lock bulk requests
             LOGGER('file', "Update status set zero for $lns");
-            DBCON("UPDATE bulk_check SET status = '0', date = NOW() WHERE lns = '$lns';");
+            DBCON("UPDATE plugin_pppoe_bulk_check SET status = '0', date = NOW() WHERE lns = '$lns';");
             if ($debug == 1) {
                 LOGGER('echo', "Starting version ".$snmp['version']." SNMP bulk query.\n");
             }
@@ -111,7 +112,7 @@ function SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
                 $userlist = exec_into_array(cacti_escapeshellcmd($path_snmpbulkwalk)." -O Qn -l authPriv -v ".$snmp['version']." -u ".$snmp['username']." -a ".$snmp['authproto']." -A ".$snmp['password']." -x ".$snmp['privacyproto']." -X ".$snmp['passphrase']." ".cacti_escapeshellarg($lns)." ".cacti_escapeshellarg($userlistoid));
             }
             // Delete previous userlist.
-            DBCON("TRUNCATE TABLE `$lns`;");
+            DBCON("TRUNCATE TABLE `plugin_pppoe_$lns`;");
             // Fill the table with corporate users.
             foreach($userlist as $line) {
                 @list($ifoid, $user) = @explode("=", $line);
@@ -119,7 +120,7 @@ function SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
                 @list(, $user) = @explode("\"", $user);
                 @list($user, $realm) = @explode("@", $user);
                 if ( $realm == "netoneadsl" || $realm == "netonesdsl" ) {
-                    DBCON("INSERT INTO `$lns` (username, oid, date, uptime) VALUES ('$user', '$ifoid', NOW(), NULL);");
+                    DBCON("INSERT INTO `plugin_pppoe_$lns` (username, oid, date, uptime) VALUES ('$user', '$ifoid', NOW(), NULL);");
                 }
             }
             DBCON("UPDATE bulk_check SET status = '1', date = NOW() WHERE lns = '$lns';");
@@ -257,7 +258,7 @@ if (sizeof($parms)) {
     }
 
     // check if lns table exists, create if not.
-    if (DBCON("SELECT 1 FROM `$lns` LIMIT 1") == FALSE) { DBCREATETABLE($lns); }
+    if (DBCON("SELECT 1 FROM `plugin_pppoe_$lns` LIMIT 1") == FALSE) { DBCREATETABLE($lns); }
 
     // Sleep if table is being updated.
     usleep(rand(100,1000));
@@ -274,7 +275,7 @@ if (sizeof($parms)) {
             sleep(1);
         }
         // Update table if it's older than 1 minute
-        $updatediff = mysqli_fetch_assoc(DBCON("SELECT IFNULL((SELECT DISTINCT(date) FROM graph_lns.`$lns` WHERE date < NOW() - INTERVAL 1 MINUTE) , 0) AS datediff"));
+        $updatediff = mysqli_fetch_assoc(DBCON("SELECT IFNULL((SELECT DISTINCT(date) FROM `plugin_pppoe_$lns` WHERE date < NOW() - INTERVAL 1 MINUTE) , 0) AS datediff"));
         if (!$updatediff['datediff'] == 0) {
             if ($debug == 1) {
                 LOGGER('echo', "Table is older than 1 minute, updating.\n");
@@ -285,7 +286,7 @@ if (sizeof($parms)) {
     }
 
     // Get oid and table update date for username
-    $ifoid = mysqli_fetch_assoc(DBCON("SELECT DISTINCT(oid), date FROM `$lns` WHERE username = '$username' ORDER BY date"));
+    $ifoid = mysqli_fetch_assoc(DBCON("SELECT DISTINCT(oid), date FROM `plugin_pppoe_$lns` WHERE username = '$username' ORDER BY date"));
     if (is_null($ifoid['oid'])) {
         // username is not connected
         if ($debug == 1) {
@@ -320,7 +321,7 @@ if (sizeof($parms)) {
         }
         LOGGER('file', "Bulk Request on $lns for $username - session is newer.");
         SNMPGETDATA("userlist", $snmp, $lns, null);
-        $ifoid = mysqli_fetch_assoc(DBCON("SELECT DISTINCT(oid) FROM `$lns` WHERE username = '$username' ORDER BY date;"));
+        $ifoid = mysqli_fetch_assoc(DBCON("SELECT DISTINCT(oid) FROM `plugin_pppoe_$lns` WHERE username = '$username' ORDER BY date;"));
     }
 
     // Get interface counters.
