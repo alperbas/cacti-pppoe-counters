@@ -64,7 +64,7 @@ function ss_pppoetraffic_CHECKUSER ($lns, $user) {
     // check if user exists in db
     //global $config;
     //$result['username'] = db_fetch_cell("SELECT DISTINCT(username) FROM `$lns` WHERE username = '$user' ORDER BY date;");
-    $result = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(username) FROM `plugin_pppoe_".$lns."` WHERE username = '".$user."' ORDER BY date;"));
+    $result = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(username) FROM `plugin_pppoe_$lns` WHERE username = '$user' ORDER BY date;"));
     if ($result['username'] == $user) {
         return 1;
     } else {
