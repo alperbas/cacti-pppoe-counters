@@ -121,7 +121,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
                 $userlist = exec_into_array(cacti_escapeshellcmd($path_snmpbulkwalk)." -O Qn -l authPriv -v ".$snmp['version']." -u ".$snmp['username']." -a ".$snmp['authproto']." -A ".$snmp['password']." -x ".$snmp['privacyproto']." -X ".$snmp['passphrase']." ".cacti_escapeshellarg($lns)." ".cacti_escapeshellarg($userlistoid));
             }
             // Delete previous userlist.
-            ss_pppoetraffic_DBCON("TRUNCATE TABLE `$lns`;");
+            ss_pppoetraffic_DBCON("TRUNCATE TABLE `plugin_pppoe_$lns`;");
             // Fill the table with corporate users.
             foreach($userlist as $line) {
                 @list($ifoid, $user) = @explode("=", $line);
