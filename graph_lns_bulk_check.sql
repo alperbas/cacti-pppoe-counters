@@ -19,10 +19,10 @@
 -- Table structure for table `bulk_check`
 --
 
-DROP TABLE IF EXISTS `bulk_check`;
+DROP TABLE IF EXISTS `plugin_pppoe_bulk_check`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `bulk_check` (
+CREATE TABLE `plugin_pppoe_bulk_check` (
   `lns` varchar(255) DEFAULT NULL,
   `status` int(32) DEFAULT NULL,
   `date` datetime DEFAULT NULL
