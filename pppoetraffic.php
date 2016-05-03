@@ -24,7 +24,7 @@ $statustimeout=10;
 //$path_snmpbulkwalk = '/usr/bin/snmpbulkwalk';
 //$path_snmpget  = '/usr/bin/snmpget';
 
-function DBCON ($sql) {
+function DBCON ($query) {
     global $debug;
     // Connect and execute query to DB
     ## enter db info here or create vars.php
@@ -43,7 +43,7 @@ function DBCON ($sql) {
             return $result;
         }
     } else {
-        return $connection->query($sql);
+        return $connection->query($query);
     }
 }
 
