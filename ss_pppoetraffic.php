@@ -272,16 +272,16 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     }
 
     // Calculate difference between now and table update time as seconds
-    $diffseconds = ss_pppoetraffic_CALCULATEDATEDIFF($ifoid['date'], date("Y-m-d H:i:s"));
-    if (!is_numeric($diffseconds)) {
-        $diffseconds = 0;
+    $tableageseconds = ss_pppoetraffic_CALCULATEDATEDIFF($ifoid['date'], date("Y-m-d H:i:s"));
+    if (!is_numeric($tableageseconds)) {
+        $tableageseconds = 0;
     }
 
     // Update table again if difftime is bigger than uptime. it means interface has changed.
     if ($debug == 1) {
-        ss_pppoetraffic_LOGGER('echo', "Table age: ".$diffseconds.", Session age: ".$sessiondurationseconds."\n");
+        ss_pppoetraffic_LOGGER('echo', "Table age: ".$tableageseconds.", Session age: ".$sessiondurationseconds."\n");
     }
-    if ($diffseconds > $sessiondurationseconds) {
+    if ($tableageseconds > $sessiondurationseconds) {
         if ($debug == 1) {
             ss_pppoetraffic_LOGGER('echo', "Table age is older than Session age, starting snmpbulk request.\n");
         }
