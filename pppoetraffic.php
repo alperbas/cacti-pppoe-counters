@@ -34,7 +34,16 @@ function DBCON ($sql) {
     if(is_file(dirname(__FILE__) . "/pppoetraffic_vars.php"))
         include dirname(__FILE__) . "/pppoetraffic_vars.php";
     $connection = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
-    return $connection->query($sql);
+    if (!$debug == 1) {
+        $result = $connection->query($query);
+        if (!$result) {
+            echo "Error executing query: (".$mysqli->errno.") ".$mysqli->error."\n";
+        } else {
+            return $result;
+        }
+    } else {
+        return $connection->query($sql);
+    }
 }
 
 function DBCREATETABLE ($table) {
