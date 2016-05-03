@@ -239,8 +239,8 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
             sleep(1);
         }
         // Update table if it's older than 1 minute
-        $updatediff = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT IFNULL((SELECT DISTINCT(date) FROM `plugin_pppoe_$lns` WHERE date < NOW() - INTERVAL 1 MINUTE LIMIT 1) , 0) AS datediff"));
-        if (!$updatediff['datediff'] == 0) {
+        $updatediff = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT IFNULL((SELECT DISTINCT(date) FROM `plugin_pppoe_$lns` WHERE date > NOW() - INTERVAL 1 MINUTE LIMIT 1) , 0) AS datediff"));
+        if ($updatediff['datediff'] == 0) {
             if ($debug == 1) {
                 ss_pppoetraffic_LOGGER('echo', "Table is older than 1 minute, updating.\n");
             }
