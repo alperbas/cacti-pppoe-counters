@@ -57,14 +57,14 @@ function ss_pppoetraffic_DBCON ($query) {
 function ss_pppoetraffic_DBCREATETABLE ($table) {
     // Create table
     ss_pppoetraffic_DBCON("CREATE TABLE `plugin_pppoe_$table` ( username varchar(255), oid varchar(255), date varchar(255), uptime varchar(255) );");
-    ss_pppoetraffic_DBCON("CREATE TABLE IF NOT EXISTS `plugin_pppoe_bulk_check` (lns varchar(255), status int(32), date datetime);");
+    ss_pppoetraffic_DBCON("CREATE TABLE IF NOT EXISTS `plugin_pppoe_bulk_check` (lns varchar(255), status int(32), date datetime );");
     ss_pppoetraffic_DBCON("INSERT INTO plugin_pppoe_bulk_check (lns, status) VALUES ('$table', '1')");
 }
 
 function ss_pppoetraffic_CHECKUSER ($lns, $user) {
     // check if user exists in db
     //global $config;
-    //$result['username'] = db_fetch_cell("SELECT DISTINCT(username) FROM `$lns` WHERE username = '$user' ORDER BY date;");
+    //$result['username'] = db_fetch_cell("SELECT DISTINCT(username) FROM `plugin_pppoe_$lns` WHERE username = '$user' ORDER BY date;");
     $result = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(username) FROM `plugin_pppoe_$lns` WHERE username = '$user' ORDER BY date;"));
     if ($result['username'] == $user) {
         return 1;
