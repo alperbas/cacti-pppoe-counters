@@ -56,9 +56,9 @@ function ss_pppoetraffic_DBCON ($query) {
 
 function ss_pppoetraffic_DBCREATETABLE ($table) {
     // Create table
-    ss_pppoetraffic_DBCON("CREATE TABLE `plugin_pppoe_$table` ( username varchar(255), oid varchar(255), date varchar(255), uptime varchar(255) );");
-    ss_pppoetraffic_DBCON("CREATE TABLE IF NOT EXISTS `plugin_pppoe_bulk_check` (lns varchar(255), status int(32), date datetime );");
-    ss_pppoetraffic_DBCON("INSERT INTO plugin_pppoe_bulk_check (lns, status) VALUES ('$table', '1')");
+    ss_pppoetraffic_DBCON("CREATE TABLE `plugin_pppoe_$table` ( username varchar(255), oid varchar(255), date varchar(255), uptime varchar(255), UNIQUE (username) );");
+    ss_pppoetraffic_DBCON("CREATE TABLE IF NOT EXISTS `plugin_pppoe_bulk_check` (lns varchar(255), status int(32), date datetime, UNIQUE (lns) );");
+    ss_pppoetraffic_DBCON("INSERT INTO plugin_pppoe_bulk_check (lns, status) VALUES ('$table', '1') ON DUPLICATE KEY UPDATE status=VALUES(status)");
 }
 
 function ss_pppoetraffic_CHECKUSER ($lns, $user) {
@@ -130,7 +130,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
                 @list(, $user) = @explode("\"", $user);
                 @list($user, $realm) = @explode("@", $user);
                 if ( $realm == "netoneadsl" || $realm == "netonesdsl" ) {
-                    ss_pppoetraffic_DBCON("INSERT INTO `plugin_pppoe_$lns` (username, oid, date, uptime) VALUES ('$user', '$ifoid', NOW(), NULL);");
+                    ss_pppoetraffic_DBCON("INSERT INTO `plugin_pppoe_$lns` (username, oid, date, uptime) VALUES ('$user', '$ifoid', NOW(), NULL) ON DUPLICATE KEY UPDATE oid=VALUES(oid), date=VALUES(date);");
                 }
             }
             ss_pppoetraffic_DBCON("UPDATE plugin_pppoe_bulk_check SET status = '1', date = NOW() WHERE lns = '$lns';");
