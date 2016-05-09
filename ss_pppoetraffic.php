@@ -11,8 +11,8 @@ $no_http_headers = true;
 //error_reporting(E_ERROR);
 
 // external functions
-include_once(dirname(__FILE__) . "/../include/global.php");
-include_once(dirname(__FILE__) . "/../lib/snmp.php");
+include_once(dirname(__FILE__) . "/../../include/global.php");
+include_once(dirname(__FILE__) . "/../../lib/snmp.php");
 
 if (!isset($called_by_script_server)) {
    array_shift($_SERVER["argv"]);
