@@ -33,6 +33,11 @@ $statustimeout=10;
 
 function ss_pppoetraffic_DBCON ($query) {
     global $debug;
+    global $database_username;
+    global $database_password;
+    global $database_hostname;
+    global $database_default;
+
     // Connect and execute query to DB
     ## enter db info here or create vars.php
     $dbservername = "hostname";
@@ -41,7 +46,7 @@ function ss_pppoetraffic_DBCON ($query) {
     $dbname = "database";
     if(is_file(dirname(__FILE__) . "/pppoetraffic_vars.php"))
         include dirname(__FILE__) . "/pppoetraffic_vars.php";
-    $connection = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
+    $connection = new mysqli($database_hostname, $database_username, $database_password, $database_default);
     if (!$debug == 1) {
         $result = $connection->query($query);
         if (!$result) {
