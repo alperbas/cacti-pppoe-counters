@@ -303,15 +303,29 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username");
     $counters = ss_pppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
     if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
-        $counters['out'] = 0;
-        $counters['in'] = 0;
-    } else {
-        db_execute("UPDATE `plugin_pppoe_$lns` SET counterin = ".$counters['in'].", counterout = ".$counters['out']." WHERE username = '$username'");
+        $counters = ss_pppoetraffic_GETOLDCOUNTERS($username);
     }
 
     return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
     exit(0);
 
+}
+
+function ss_pppoetraffic_GETOLDCOUNTERS($username) {
+    global $config;
+    global $debug;
+
+    $path_rrdtool = "/usr/bin/rrdtool";
+
+    $rrdcell = db_fetch_cell("SELECT data_source_path FROM data_template_data WHERE name like '%- $username';");
+    if (!is_null($rrdcell)) {
+        @list( , $rrd) = @explode("/", $rrdcell);
+        $rrd = $config["rra_path"]."/".$rrd;
+        $oldcounters = exec_into_array(cacti_escapeshellcmd($path_rrdtool)." lastupdate ".cacti_escapeshellarg($rrd));
+        @list($time, $counters['out'], $counters['in']) = @explode(" ", $oldcounters[2]);
+    }
+    
+    return $counters;
 }
 
 function ss_pppoetraffic_display_help() {
