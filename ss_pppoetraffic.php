@@ -31,6 +31,14 @@ $statustimeout=10;
 //$path_snmpbulkwalk = '/usr/bin/snmpbulkwalk';
 //$path_snmpget  = '/usr/bin/snmpget';
 
+/* Cacti sql functions
+db_execute - run an sql query and do not return any output
+db_fetch_cell - run a 'select' sql query and return the first column of the first row found
+db_fetch_row - run a 'select' sql query and return the first row found
+db_fetch_assoc - run a 'select' sql query and return all rows found
+*/
+
+
 function ss_pppoetraffic_DBCON ($query) {
     global $debug;
     global $database_username;
