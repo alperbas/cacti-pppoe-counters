@@ -128,7 +128,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
                 @list(, $user) = @explode("\"", $user);
                 @list($user, $realm) = @explode("@", $user);
                 if ( $realm == "netoneadsl" || $realm == "netonesdsl" ) {
-                    ss_pppoetraffic_DBCON("INSERT INTO `plugin_pppoe_$lns` (username, oid, date, uptime) VALUES ('$user', '$ifoid', NOW(), NULL) ON DUPLICATE KEY UPDATE oid=VALUES(oid), date=VALUES(date);");
+                    ss_pppoetraffic_DBCON("INSERT INTO `plugin_pppoe_$lns` (username, oid, date) VALUES ('$user', '$ifoid', NOW() ) ON DUPLICATE KEY UPDATE oid=VALUES(oid), date=VALUES(date);");
                 }
             }
             ss_pppoetraffic_DBCON("UPDATE plugin_pppoe_bulk_check SET status = '1', date = NOW() WHERE lns = '$lns';");
@@ -294,7 +294,14 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     // Get interface counters.
     ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username");
     $counters = ss_pppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
-    return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
+    if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
+        $counters['out'] = $q;
+        $counters['in'] = $q;
+    } else {
+        ss_pppoetraffic_DBCON("UPDATE `plugin_pppoe_$lns` SET counterin = '$counters['in']', counterout = '$counters['out']' WHERE username = '$username'")
+        return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
+    }
+
     exit(0);
 
 }
