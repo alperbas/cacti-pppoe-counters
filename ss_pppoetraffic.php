@@ -31,17 +31,23 @@ $statustimeout=10;
 //$path_snmpbulkwalk = '/usr/bin/snmpbulkwalk';
 //$path_snmpget  = '/usr/bin/snmpget';
 
+/* Cacti sql functions
+db_execute - run an sql query and do not return any output
+db_fetch_cell - run a 'select' sql query and return the first column of the first row found
+db_fetch_row - run a 'select' sql query and return the first row found
+db_fetch_assoc - run a 'select' sql query and return all rows found
+*/
+
+
 function ss_pppoetraffic_DBCON ($query) {
     global $debug;
+    global $database_username;
+    global $database_password;
+    global $database_hostname;
+    global $database_default;
+
     // Connect and execute query to DB
-    ## enter db info here or create vars.php
-    $dbservername = "hostname";
-    $dbusername = "username";
-    $dbpassword = "password";
-    $dbname = "database";
-    if(is_file(dirname(__FILE__) . "/pppoetraffic_vars.php"))
-        include dirname(__FILE__) . "/pppoetraffic_vars.php";
-    $connection = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
+    $connection = new mysqli($database_hostname, $database_username, $database_password, $database_default);
     if (!$debug == 1) {
         $result = $connection->query($query);
         if (!$result) {
@@ -56,7 +62,7 @@ function ss_pppoetraffic_DBCON ($query) {
 
 function ss_pppoetraffic_DBCREATETABLE ($table) {
     // Create table
-    ss_pppoetraffic_DBCON("CREATE TABLE `plugin_pppoe_$table` ( username varchar(255), oid varchar(255), date varchar(255), uptime varchar(255), UNIQUE (username) );");
+    ss_pppoetraffic_DBCON("CREATE TABLE `plugin_pppoe_$table` ( username varchar(255), oid varchar(255), date varchar(255), counterin varchar(255), counterout varchar(255), UNIQUE (username) );");
     ss_pppoetraffic_DBCON("CREATE TABLE IF NOT EXISTS `plugin_pppoe_bulk_check` (lns varchar(255), status int(32), date datetime, UNIQUE (lns) );");
     ss_pppoetraffic_DBCON("INSERT INTO plugin_pppoe_bulk_check (lns, status) VALUES ('$table', '1') ON DUPLICATE KEY UPDATE status=VALUES(status)");
 }
@@ -130,7 +136,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
                 @list(, $user) = @explode("\"", $user);
                 @list($user, $realm) = @explode("@", $user);
                 if ( $realm == "netoneadsl" || $realm == "netonesdsl" ) {
-                    ss_pppoetraffic_DBCON("INSERT INTO `plugin_pppoe_$lns` (username, oid, date, uptime) VALUES ('$user', '$ifoid', NOW(), NULL) ON DUPLICATE KEY UPDATE oid=VALUES(oid), date=VALUES(date);");
+                    ss_pppoetraffic_DBCON("INSERT INTO `plugin_pppoe_$lns` (username, oid, date) VALUES ('$user', '$ifoid', NOW() ) ON DUPLICATE KEY UPDATE oid=VALUES(oid), date=VALUES(date);");
                 }
             }
             ss_pppoetraffic_DBCON("UPDATE plugin_pppoe_bulk_check SET status = '1', date = NOW() WHERE lns = '$lns';");
@@ -296,9 +302,31 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     // Get interface counters.
     ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username");
     $counters = ss_pppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
+    if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
+        ss_pppoetraffic_LOGGER('file', "Zero counters on $lns get old values for $username");
+        $counters = ss_pppoetraffic_GETOLDCOUNTERS($username);
+    }
+
     return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
     exit(0);
 
+}
+
+function ss_pppoetraffic_GETOLDCOUNTERS($username) {
+    global $config;
+    global $debug;
+
+    $path_rrdtool = "/usr/bin/rrdtool";
+
+    $rrdcell = db_fetch_cell("SELECT data_source_path FROM data_template_data WHERE name like '%- $username';");
+    if (!is_null($rrdcell)) {
+        @list( , $rrd) = @explode("/", $rrdcell);
+        $rrd = $config["rra_path"]."/".$rrd;
+        $oldcounters = exec_into_array(cacti_escapeshellcmd($path_rrdtool)." lastupdate ".cacti_escapeshellarg($rrd));
+        @list($time, $counters['in'], $counters['out']) = @explode(" ", $oldcounters[2]);
+    }
+
+    return $counters;
 }
 
 function ss_pppoetraffic_display_help() {

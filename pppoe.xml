@@ -1,0 +1,39 @@
+<interface>
+    <name>Get PPPoE Interface Counters</name>
+    <script_path>|path_cacti|/scripts/ss_pppoetraffic.php</script_path>
+    <script_function>ss_pppoetraffic_list</script_function>
+    <script_server>php</script_server>
+    <arg_prepend>|host_hostname| |host_snmp_version|</arg_prepend>
+    <arg_index>index</arg_index>
+    <arg_query>query</arg_query>
+    <arg_get>get</arg_get>
+    <output_delimeter>:</output_delimeter>
+
+    <index_order>PPPindex:PPPoE_UserName</index_order>
+    <index_order_type>numeric</index_order_type>
+
+        <fields>
+
+            <PPPindex>
+                <name>Index</name>
+                <direction>input</direction>
+                <query_name>index</query_name>
+            </PPPindex>
+            <PPPoE_UserName>
+                <name>PPPoE Username</name>
+                <direction>input</direction>
+                <query_name>PPPoE_UserName</query_name>
+            </PPPoE_UserName>
+
+            <traffic_in>
+                <name>Bytes In</name>
+                <direction>output</direction>
+                <query_name>in_traffic</query_name>
+            </traffic_in>
+            <traffic_out>
+                <name>Bytes Out</name>
+                <direction>output</direction>
+                <query_name>out_traffic</query_name>
+            </traffic_out>
+        </fields>
+</interface>
