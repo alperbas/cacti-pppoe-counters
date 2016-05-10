@@ -298,7 +298,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         $counters['out'] = $q;
         $counters['in'] = $q;
     } else {
-        ss_pppoetraffic_DBCON("UPDATE `plugin_pppoe_$lns` SET counterin = $counters['in'], counterout = $counters['out'] WHERE username = '$username'");
+        ss_pppoetraffic_DBCON("UPDATE `plugin_pppoe_$lns` SET counterin = ."$counters['in'].", counterout = ."$counters['out']." WHERE username = '$username'");
         return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
     }
 
