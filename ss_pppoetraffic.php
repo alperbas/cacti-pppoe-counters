@@ -295,10 +295,10 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username");
     $counters = ss_pppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
     if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
-        $counters['out'] = $q;
-        $counters['in'] = $q;
+        $counters['out'] = 0;
+        $counters['in'] = 0;
     } else {
-        ss_pppoetraffic_DBCON("UPDATE `plugin_pppoe_$lns` SET counterin = ."$counters['in'].", counterout = ."$counters['out']." WHERE username = '."$username."'");
+        ss_pppoetraffic_DBCON("UPDATE `plugin_pppoe_$lns` SET counterin = ".$counters['in'].", counterout = ".$counters['out']." WHERE username = '$username'");
         return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
     }
 
