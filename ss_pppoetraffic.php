@@ -306,10 +306,10 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         $counters['out'] = 0;
         $counters['in'] = 0;
     } else {
-        ss_pppoetraffic_DBCON("UPDATE `plugin_pppoe_$lns` SET counterin = ".$counters['in'].", counterout = ".$counters['out']." WHERE username = '$username'");
-        return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
+        db_execute("UPDATE `plugin_pppoe_$lns` SET counterin = ".$counters['in'].", counterout = ".$counters['out']." WHERE username = '$username'");
     }
 
+    return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
     exit(0);
 
 }
