@@ -39,13 +39,6 @@ function ss_pppoetraffic_DBCON ($query) {
     global $database_default;
 
     // Connect and execute query to DB
-    ## enter db info here or create vars.php
-    $dbservername = "hostname";
-    $dbusername = "username";
-    $dbpassword = "password";
-    $dbname = "database";
-    if(is_file(dirname(__FILE__) . "/pppoetraffic_vars.php"))
-        include dirname(__FILE__) . "/pppoetraffic_vars.php";
     $connection = new mysqli($database_hostname, $database_username, $database_password, $database_default);
     if (!$debug == 1) {
         $result = $connection->query($query);
@@ -61,7 +54,7 @@ function ss_pppoetraffic_DBCON ($query) {
 
 function ss_pppoetraffic_DBCREATETABLE ($table) {
     // Create table
-    ss_pppoetraffic_DBCON("CREATE TABLE `plugin_pppoe_$table` ( username varchar(255), oid varchar(255), date varchar(255), uptime varchar(255), UNIQUE (username) );");
+    ss_pppoetraffic_DBCON("CREATE TABLE `plugin_pppoe_$table` ( username varchar(255), oid varchar(255), date varchar(255), counterin varchar(255), counterout varchar(255), UNIQUE (username) );");
     ss_pppoetraffic_DBCON("CREATE TABLE IF NOT EXISTS `plugin_pppoe_bulk_check` (lns varchar(255), status int(32), date datetime, UNIQUE (lns) );");
     ss_pppoetraffic_DBCON("INSERT INTO plugin_pppoe_bulk_check (lns, status) VALUES ('$table', '1') ON DUPLICATE KEY UPDATE status=VALUES(status)");
 }
