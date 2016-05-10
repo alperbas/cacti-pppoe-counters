@@ -303,6 +303,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username");
     $counters = ss_pppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
     if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
+        ss_pppoetraffic_LOGGER('file', "Zero counters on $lns get old values for $username");
         $counters = ss_pppoetraffic_GETOLDCOUNTERS($username);
     }
 
@@ -322,9 +323,9 @@ function ss_pppoetraffic_GETOLDCOUNTERS($username) {
         @list( , $rrd) = @explode("/", $rrdcell);
         $rrd = $config["rra_path"]."/".$rrd;
         $oldcounters = exec_into_array(cacti_escapeshellcmd($path_rrdtool)." lastupdate ".cacti_escapeshellarg($rrd));
-        @list($time, $counters['out'], $counters['in']) = @explode(" ", $oldcounters[2]);
+        @list($time, $counters['in'], $counters['out']) = @explode(" ", $oldcounters[2]);
     }
-    
+
     return $counters;
 }
 
