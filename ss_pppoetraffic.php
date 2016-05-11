@@ -335,11 +335,11 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         ss_pppoetraffic_LOGGER('file', "Zero counters for $username");
         $counters = $oldcounters;
     }
-    if ( $counters['in'] > 0 && $oldcounters['in'] > 1 && ($counters['in'] / $oldcounters['in']) > 100) {
+    if ( $counters['in'] != '0' && $oldcounters['in'] > '1' && ($counters['in'] / $oldcounters['in']) > '100') {
         ss_pppoetraffic_LOGGER('file', "Inbound peak for $username");
         $counters['in'] = $oldcounters['in'];
     }
-    if ( $counters['out'] > 0 && $oldcounters['out'] > 1 && ($counters['out'] / $oldcounters['out']) > 100) {
+    if ( $counters['out'] != '0' && $oldcounters['out'] > '1' && ($counters['out'] / $oldcounters['out']) > '100') {
         ss_pppoetraffic_LOGGER('file', "Outbound peak for $username");
         $counters['out'] = $oldcounters['out'];
     }
