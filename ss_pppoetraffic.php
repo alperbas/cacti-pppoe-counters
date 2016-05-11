@@ -328,8 +328,8 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     }
 
     // Get interface counters.
-    ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username, if ".$ifoid['oid'].", age $sessiondurationseconds");
     $counters = ss_pppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
+    ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username, if ".$ifoid['oid'].", age $sessiondurationseconds, in counter ".$counters['in']." out counter ".$counters['out']);
     $oldcounters = ss_pppoetraffic_GETOLDCOUNTERS($username);
     if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
         ss_pppoetraffic_LOGGER('file', "Zero counters for $username");
