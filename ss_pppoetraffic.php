@@ -25,11 +25,6 @@ $debug=0;
 $loglevel=0; // to be implemented
 //--------------
 $statustimeout=10;
-//$userlistoid    = '1.3.6.1.4.1.9.10.24.1.3.2.1.2.2';
-//$ifindexoid     = '1.3.6.1.4.1.9.10.24.1.3.2.1.11';
-//$ifcallduration = '1.3.6.1.4.1.9.10.24.1.3.2.1.4';
-//$path_snmpbulkwalk = '/usr/bin/snmpbulkwalk';
-//$path_snmpget  = '/usr/bin/snmpget';
 
 /* Cacti sql functions
 db_execute - run an sql query and do not return any output
@@ -37,7 +32,6 @@ db_fetch_cell - run a 'select' sql query and return the first column of the firs
 db_fetch_row - run a 'select' sql query and return the first row found
 db_fetch_assoc - run a 'select' sql query and return all rows found
 */
-
 
 function ss_pppoetraffic_DBCON ($query) {
     global $debug;
