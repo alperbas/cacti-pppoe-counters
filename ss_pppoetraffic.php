@@ -316,6 +316,15 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns for $username - session is newer, age $sessiondurationseconds");
         ss_pppoetraffic_SNMPGETDATA("userlist", $snmp, $lns, null);
         $ifoid = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(oid) FROM `plugin_pppoe_$lns` WHERE username = '$username' ORDER BY date;"));
+        if (is_null($ifoid['oid'])) {
+            // username is not connected
+            if ($debug == 1) {
+                ss_pppoetraffic_LOGGER('echo', "User not found, exit.\n");
+            }
+            ss_pppoetraffic_LOGGER('file', "User is missing on $lns for $username - exit.");
+            return "in_traffic:0 out_traffic:0";
+            exit(1);
+        }
     }
 
     // Get interface counters.
