@@ -313,7 +313,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         while (!ss_pppoetraffic_CHECKTABLE($lns)) {
             sleep(1);
         }
-        ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns for $username - session is newer.");
+        ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns for $username - session is newer, age $sessiondurationseconds");
         ss_pppoetraffic_SNMPGETDATA("userlist", $snmp, $lns, null);
         $ifoid = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(oid) FROM `plugin_pppoe_$lns` WHERE username = '$username' ORDER BY date;"));
     }
