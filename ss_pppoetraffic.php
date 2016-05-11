@@ -107,7 +107,23 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
     //snmpget -v $snmpversion -c $snmpcommunity  $lns $ifoid
     //snmpget -l authPriv -v $snmpversion -u $snmpusername -a $snmpauthproto -A $snmppassword -x $snmpprivacyproto -X $snmppassphrase $lns $ifoid
     global $debug;
-    $userlistoid    = '1.3.6.1.4.1.9.10.24.1.3.2.1.2.2';
+    /* YAPA
+    casnUserId = "1.3.6.1.4.1.9.9.150.1.1.3.1.2"
+    casnIpAddr = "1.3.6.1.4.1.9.9.150.1.1.3.1.3"
+    casnVAIIfIndex = "1.3.6.1.4.1.9.9.150.1.1.3.1.8"
+    VAE
+    cvpdnSessionAttrTable = "1.3.6.1.4.1.9.10.24.1.3.2"
+    cvpdnSessionAttrBytesOut = "1.3.6.1.4.1.9.10.24.1.3.2.1.6"
+    cvpdnSessionAttrBytesIn = "1.3.6.1.4.1.9.10.24.1.3.2.1.8"
+    cvpdnSessionAttrCallDuration = "1.3.6.1.4.1.9.10.24.1.3.2.1.4"
+    cvpdnSessionAttrUserName = "1.3.6.1.4.1.9.10.24.1.3.2.1.2."
+    cvpdnSessionAttrDeviceType = "1.3.6.1.4.1.9.10.24.1.3.2.1.9"
+    cvpdnSessionAttrState = "1.3.6.1.4.1.9.10.24.1.3.2.1.3"
+    cvpdnSessionAttrPacketsOut = "1.3.6.1.4.1.9.10.24.1.3.2.1.5"
+    cvpdnSessionAttrPacketsIn = "1.3.6.1.4.1.9.10.24.1.3.2.1.7"
+    */
+    $userlistoid    = '1.3.6.1.4.1.9.10.24.1.3.2.1.2';
+    $userlistexplode = ".$userlistoid."
     $ifindexoid     = '1.3.6.1.4.1.9.10.24.1.3.2.1.11';
     $ifcallduration = '1.3.6.1.4.1.9.10.24.1.3.2.1.4';
     $path_snmpget  = '/usr/bin/snmpget';
