@@ -123,7 +123,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
     cvpdnSessionAttrPacketsIn = "1.3.6.1.4.1.9.10.24.1.3.2.1.7"
     */
     $userlistoid    = '1.3.6.1.4.1.9.10.24.1.3.2.1.2';
-    $userlistexplode = ".$userlistoid."
+    $userlistexplode = ".$userlistoid.";
     $ifindexoid     = '1.3.6.1.4.1.9.10.24.1.3.2.1.11';
     $ifcallduration = '1.3.6.1.4.1.9.10.24.1.3.2.1.4';
     $path_snmpget  = '/usr/bin/snmpget';
