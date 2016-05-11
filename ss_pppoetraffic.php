@@ -300,10 +300,9 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     }
 
     // Get interface counters.
-    ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username, session age is $sessiondurationseconds");
+    ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username, if $ifoid age $sessiondurationseconds");
     $counters = ss_pppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
     if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
-
         $counters = ss_pppoetraffic_GETOLDCOUNTERS($username);
     }
 
@@ -326,7 +325,7 @@ function ss_pppoetraffic_GETOLDCOUNTERS($username) {
         @list($time, $counters['in'], $counters['out']) = @explode(" ", $oldcounters[2]);
     }
 
-    ss_pppoetraffic_LOGGER('file', "Zero counters on $lns get old values for $username, rrd is $rrd");
+    ss_pppoetraffic_LOGGER('file', "Zero counters for $username, rrd is $rrd");
     return $counters;
 }
 
