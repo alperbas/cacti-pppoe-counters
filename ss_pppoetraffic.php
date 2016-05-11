@@ -125,7 +125,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) {
     //$ifcallduration = '1.3.6.1.4.1.9.10.24.1.3.2.1.4'; //$cvpdnSessionAttrCallDuration
 
     $userlistoid = $cvpdnSessionAttrUserName;
-    $ifindexoid = $casnVAIIfIndex;
+    $ifindexoid = $cvpdnSessionAttrDevicePhyId;
     $ifcallduration = $cvpdnSessionAttrCallDuration;
 
     $userlistexplode = ".$userlistoid.";
