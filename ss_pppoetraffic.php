@@ -354,7 +354,7 @@ function ss_pppoetraffic_GETOLDCOUNTERS($username) {
         @list($time, $counters['in'], $counters['out']) = @explode(" ", $oldcounters[2]);
     }
 
-    ss_pppoetraffic_LOGGER('file', "$username, rrd is $rrd");
+    ss_pppoetraffic_LOGGER('file', "Get old counters for $username, rrd is $rrd");
     return $counters;
 }
 
