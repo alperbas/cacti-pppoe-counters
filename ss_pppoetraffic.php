@@ -55,6 +55,7 @@ function ss_pppoetraffic_DBCON ($query) {
 }
 
 function ss_pppoetraffic_DBCREATETABLE ($table) {
+    global $config;
     // Create table
     ss_pppoetraffic_DBCON("CREATE TABLE `plugin_pppoe_$table` ( username varchar(255), oid varchar(255), date varchar(255), counterin varchar(255), counterout varchar(255), UNIQUE (username) );");
     ss_pppoetraffic_DBCON("CREATE TABLE IF NOT EXISTS `plugin_pppoe_bulk_check` (lns varchar(255), status int(32), date datetime, UNIQUE (lns) );");
@@ -63,7 +64,7 @@ function ss_pppoetraffic_DBCREATETABLE ($table) {
 
 function ss_pppoetraffic_CHECKUSER ($lns, $user) {
     // check if user exists in db
-    //global $config;
+    global $config;
     //$result['username'] = db_fetch_cell("SELECT DISTINCT(username) FROM `plugin_pppoe_$lns` WHERE username = '$user' ORDER BY date;");
     $result = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(username) FROM `plugin_pppoe_$lns` WHERE username = '$user' ORDER BY date;"));
     if ($result['username'] == $user) {
@@ -74,6 +75,7 @@ function ss_pppoetraffic_CHECKUSER ($lns, $user) {
 }
 
 function ss_pppoetraffic_CHECKTABLE ($lns) {
+    global $config;
     global $debug;
     global $statustimeout;
     // Check if table is ready for update
@@ -97,7 +99,8 @@ function ss_pppoetraffic_CHECKTABLE ($lns) {
     }
 }
 
-function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
+function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) {
+    global $config;
     //snmpget -v $snmpversion -c $snmpcommunity  $lns $ifoid
     //snmpget -l authPriv -v $snmpversion -u $snmpusername -a $snmpauthproto -A $snmppassword -x $snmpprivacyproto -X $snmppassphrase $lns $ifoid
     global $debug;
