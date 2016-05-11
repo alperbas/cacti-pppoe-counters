@@ -148,7 +148,7 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) { //
             // Fill the table with corporate users.
             foreach($userlist as $line) {
                 @list($ifoid, $user) = @explode("=", $line);
-                @list(, $ifoid) = @explode(".1.3.6.1.4.1.9.10.24.1.3.2.1.2.", $ifoid);
+                @list(, $ifoid) = @explode($userlistexplode, $ifoid);
                 @list(, $user) = @explode("\"", $user);
                 @list($user, $realm) = @explode("@", $user);
                 if ( $realm == "netoneadsl" || $realm == "netonesdsl" ) {
