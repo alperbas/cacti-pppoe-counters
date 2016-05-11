@@ -308,12 +308,15 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     }
     if ($tableageseconds > $sessiondurationseconds) {
         if ($debug == 1) {
-            ss_pppoetraffic_LOGGER('echo', "Table age is older than Session age, starting snmpbulk request.\n");
+            ss_pppoetraffic_LOGGER('echo', "Table age is older than Session age.\n");
         }
         while (!ss_pppoetraffic_CHECKTABLE($lns)) {
             sleep(1);
         }
-        ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns for $username - session is newer, age $sessiondurationseconds");
+        ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns for $username - session is newer, age $sessiondurationseconds - exit");
+        return "in_traffic:0 out_traffic:0";
+        exit(1);
+        /*
         ss_pppoetraffic_SNMPGETDATA("userlist", $snmp, $lns, null);
         $ifoid = mysqli_fetch_assoc(ss_pppoetraffic_DBCON("SELECT DISTINCT(oid) FROM `plugin_pppoe_$lns` WHERE username = '$username' ORDER BY date;"));
         if (is_null($ifoid['oid'])) {
@@ -325,6 +328,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
             return "in_traffic:0 out_traffic:0";
             exit(1);
         }
+        */
     }
 
     // Get interface counters.
@@ -335,6 +339,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         ss_pppoetraffic_LOGGER('file', "Zero counters for $username");
         $counters = $oldcounters;
     }
+    /* gecici kapadim.
     if ( $counters['in'] != '0' && $oldcounters['in'] > '1' && ($counters['in'] / $oldcounters['in']) > '100') {
         ss_pppoetraffic_LOGGER('file', "Inbound peak for $username, old counter ".$oldcounters['in']." new counter ".$counters['in']);
         $counters['in'] = $oldcounters['in'];
@@ -343,6 +348,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         ss_pppoetraffic_LOGGER('file', "Outbound peak for $username, old counter ".$oldcounters['out']." new counter ".$counters['out']);
         $counters['out'] = $oldcounters['out'];
     }
+    */
 
     return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
     exit(0);
