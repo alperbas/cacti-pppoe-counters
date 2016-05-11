@@ -321,8 +321,18 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     // Get interface counters.
     ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username, if ".$ifoid['oid'].", age $sessiondurationseconds");
     $counters = ss_pppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
-    if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
     $oldcounters = ss_pppoetraffic_GETOLDCOUNTERS($username);
+    if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
+        ss_pppoetraffic_LOGGER('file', "Zero counters for $username");
+        $counters = $oldcounters;
+    }
+    if ( $counters['in'] > 0 && $oldcounters['in'] > 1 && ($counters['in'] / $oldcounters['in']) > 100) {
+        ss_pppoetraffic_LOGGER('file', "Inbound peak for $username");
+        $counters['in'] = $oldcounters['in'];
+    }
+    if ( $counters['out'] > 0 && $oldcounters['out'] > 1 && ($counters['out'] / $oldcounters['out']) > 100) {
+        ss_pppoetraffic_LOGGER('file', "Outbound peak for $username");
+        $counters['out'] = $oldcounters['out'];
     }
 
     return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
