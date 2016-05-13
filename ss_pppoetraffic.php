@@ -104,6 +104,9 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid = NULL) {
     //snmpget -v $snmpversion -c $snmpcommunity  $lns $ifoid
     //snmpget -l authPriv -v $snmpversion -u $snmpusername -a $snmpauthproto -A $snmppassword -x $snmpprivacyproto -X $snmppassphrase $lns $ifoid
     global $debug;
+    //Path
+    $path_snmpget  = '/usr/bin/snmpget';
+    $path_snmpbulkwalk = '/usr/bin/snmpbulkwalk';
     //YAPA
     $casnUserId = "1.3.6.1.4.1.9.9.150.1.1.3.1.2";
     $casnIpAddr = "1.3.6.1.4.1.9.9.150.1.1.3.1.3";
@@ -127,10 +130,12 @@ function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid = NULL) {
     $userlistoid = $cvpdnSessionAttrUserName;
     $ifindexoid = $cvpdnSessionAttrDevicePhyId;
     $ifcallduration = $cvpdnSessionAttrCallDuration;
-
+    if ( $type = 'YAPA') {
+        $userlistoid = $casnUserId;
+        $ifindexoid = $casnVAIIfIndex;
+    }
     $userlistexplode = ".$userlistoid.";
-    $path_snmpget  = '/usr/bin/snmpget';
-    $path_snmpbulkwalk = '/usr/bin/snmpbulkwalk';
+
 
     switch ($command) {
         case "userlist":
@@ -220,7 +225,25 @@ function ss_pppoetraffic_LOGGER ($type, $log) {
     }
 }
 
-function ss_pppoetraffic ($hostname, $snmpversion, $username) {
+function ss_pppoetraffic_GETOLDCOUNTERS($username) {
+    global $config;
+    global $debug;
+
+    $path_rrdtool = "/usr/bin/rrdtool";
+
+    $rrdcell = db_fetch_cell("SELECT data_source_path FROM data_template_data WHERE name like '%- $username';");
+    if (!is_null($rrdcell)) {
+        @list( , $rrd) = @explode("/", $rrdcell);
+        $rrd = $config["rra_path"]."/".$rrd;
+        $oldcounters = exec_into_array(cacti_escapeshellcmd($path_rrdtool)." lastupdate ".cacti_escapeshellarg($rrd));
+        @list($time, $counters['in'], $counters['out']) = @explode(" ", $oldcounters[2]);
+    }
+
+    ss_pppoetraffic_LOGGER('file', "Get old counters for $username, in ".$counters['in']." out ".$counters['out']." rrd is $rrd");
+    return $counters;
+}
+
+function ss_pppoetraffic ($hostname, $snmpversion, $username, $type = 'VAE') {
     global $config;
     global $debug;
 
@@ -271,7 +294,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
                 ss_pppoetraffic_LOGGER('echo', "Table is older than 1 minute, updating.\n");
             }
             ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns for $username");
-            ss_pppoetraffic_SNMPGETDATA("userlist", $snmp, $lns, null);
+            ss_pppoetraffic_SNMPGETDATA("userlist", $snmp, $lns);
         }
     }
 
@@ -361,24 +384,6 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     return "in_traffic:".$counters['out']." out_traffic:".$counters['in'];
     exit(0);
 
-}
-
-function ss_pppoetraffic_GETOLDCOUNTERS($username) {
-    global $config;
-    global $debug;
-
-    $path_rrdtool = "/usr/bin/rrdtool";
-
-    $rrdcell = db_fetch_cell("SELECT data_source_path FROM data_template_data WHERE name like '%- $username';");
-    if (!is_null($rrdcell)) {
-        @list( , $rrd) = @explode("/", $rrdcell);
-        $rrd = $config["rra_path"]."/".$rrd;
-        $oldcounters = exec_into_array(cacti_escapeshellcmd($path_rrdtool)." lastupdate ".cacti_escapeshellarg($rrd));
-        @list($time, $counters['in'], $counters['out']) = @explode(" ", $oldcounters[2]);
-    }
-
-    ss_pppoetraffic_LOGGER('file', "Get old counters for $username, in ".$counters['in']." out ".$counters['out']." rrd is $rrd");
-    return $counters;
 }
 
 function ss_pppoetraffic_display_help() {
