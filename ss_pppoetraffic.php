@@ -99,7 +99,7 @@ function ss_pppoetraffic_CHECKTABLE ($lns) {
     }
 }
 
-function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid) {
+function ss_pppoetraffic_SNMPGETDATA ($command, $snmp, $lns, $ifoid = NULL) {
     global $config;
     //snmpget -v $snmpversion -c $snmpcommunity  $lns $ifoid
     //snmpget -l authPriv -v $snmpversion -u $snmpusername -a $snmpauthproto -A $snmppassword -x $snmpprivacyproto -X $snmppassphrase $lns $ifoid
