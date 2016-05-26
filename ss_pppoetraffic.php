@@ -346,8 +346,14 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     $oldcounters = ss_pppoetraffic_GETOLDCOUNTERS($username);
     ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username, if ".$ifoid['oid'].", in ".$counters['in']." out ".$counters['out']);
     if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
-        ss_pppoetraffic_LOGGER('file', "Zero counters for $username");
+        ss_pppoetraffic_LOGGER('file', "Zero both counters for $username");
         $counters = $oldcounters;
+    } elseif ( $counters['in'] == '0' && $counters['out'] > '0') {
+        ss_pppoetraffic_LOGGER('file', "Zero in counters for $username");
+        $counters['in'] = $oldcounters['in'];
+    } elseif ( $counters['in'] > '0' && $counters['out'] == '0') {
+        ss_pppoetraffic_LOGGER('file', "Zero out counters for $username");
+        $counters['out'] = $oldcounters['out'];
     }
     /* gecici kapadim. session age 5dk'dan fazla ise true olsun ?
     if ( $counters['in'] != '0' && $oldcounters['in'] > '1' && ($counters['in'] / $oldcounters['in']) > 100 && $sessiondurationseconds > 300 ) {
