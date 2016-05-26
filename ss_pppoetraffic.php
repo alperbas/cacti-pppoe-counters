@@ -237,6 +237,7 @@ function ss_pppoetraffic_GETOLDCOUNTERS($username) {
 }
 
 function ss_pppoetraffic_CHECKTABLEAGE($lns, $interval) {
+    global $debug;
     $updatediff = db_fetch_cell("SELECT IFNULL((SELECT date FROM `plugin_pppoe_bulk_check` WHERE (date > NOW() - INTERVAL $interval MINUTE) AND lns='$lns' limit 1) , 0) AS datediff");
     if ($updatediff == 0) {
         if ($debug == 1) { ss_pppoetraffic_LOGGER('echo', "Table is older than $interval minute for $lns.\n"); }
@@ -283,7 +284,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     }
 
     // Update table if its older than 4 minutes
-    if (ss_pppoetraffic_CHECKTABLEAGE($lns, 4) {
+    if (ss_pppoetraffic_CHECKTABLEAGE($lns, 4)) {
         ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns, table is older than 4 minutes");
         ss_pppoetraffic_SNMPGETDATA("userlist", $snmp, $lns);
     }
@@ -316,7 +317,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     }
 
     // Get table age as seconds
-    $tableage = db_fetch_cell("SELECT date FROM `plugin_pppoe_bulk_check` WHERE lns='$lns'")
+    $tableage = db_fetch_cell("SELECT date FROM `plugin_pppoe_bulk_check` WHERE lns='$lns'");
     // Calculate difference between now and table update time as seconds
     $tableageseconds = ss_pppoetraffic_CALCULATEDATEDIFF($tableage, date("Y-m-d H:i:s"));
     if (!is_numeric($tableageseconds)) {
