@@ -255,6 +255,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     if (is_null(db_fetch_cell("SELECT hostname FROM host WHERE hostname = '$hostname'")); {
         if ($debug == 1) { ss_pppoetraffic_LOGGER('echo', "Host $lns does not exists."); }
         ss_pppoetraffic_LOGGER('file', "Host $lns does not exists.");
+        exit(1);
     }
 
     // get variables
@@ -291,7 +292,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
 
     // Update table if its older than 4 minutes
     if (ss_pppoetraffic_CHECKTABLEAGE($lns, 4)) {
-        ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns, table is older than 4 minutes");
+        ss_pppoetraffic_LOGGER('file', "Bulk Request on $lns, table is older than 4 minutes - for $username");
         ss_pppoetraffic_SNMPGETDATA("userlist", $snmp, $lns);
     }
 
@@ -316,6 +317,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         exit(1);
     }
 
+    /* no more age check
     // Get ppp session up time as seconds YAPA returns 0
     $sessiondurationseconds = ss_pppoetraffic_SNMPGETDATA("sessionduration", $snmp, $lns, $ifoid['oid']);
     if (!is_numeric($sessiondurationseconds)) {
@@ -337,6 +339,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
         return "in_traffic:0 out_traffic:0";
         exit(1);
     }
+    */
 
     // Get interface counters.
     $counters = ss_pppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
