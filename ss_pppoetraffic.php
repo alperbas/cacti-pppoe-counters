@@ -252,7 +252,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     global $debug;
 
     // check if device exists
-    if (is_null(db_fetch_cell("SELECT hostname FROM host WHERE hostname = '$hostname'")); {
+    if (is_null(db_fetch_cell("SELECT hostname FROM host WHERE hostname = '$hostname'")) {
         if ($debug == 1) { ss_pppoetraffic_LOGGER('echo', "Host $lns does not exists."); }
         ss_pppoetraffic_LOGGER('file', "Host $lns does not exists.");
         exit(1);
