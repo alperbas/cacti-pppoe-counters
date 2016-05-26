@@ -251,7 +251,13 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
     global $config;
     global $debug;
 
-    //get variables
+    // check if device exists
+    if (is_null(db_fetch_cell("SELECT hostname FROM host WHERE hostname = '$hostname'")); {
+        if ($debug == 1) { ss_pppoetraffic_LOGGER('echo', "Host $lns does not exists."); }
+        ss_pppoetraffic_LOGGER('file', "Host $lns does not exists.");
+    }
+
+    // get variables
     if ($snmpversion == '2') {
         $snmp['version'] = '2c';
         $snmp['community'] = db_fetch_cell("SELECT snmp_community FROM host WHERE hostname = '$hostname'", FALSE);
