@@ -298,7 +298,7 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
 
     // Check if username exists
     if (!ss_pppoetraffic_CHECKUSER($lns, $username)) {
-        // username is not connected
+        // Username is not connected
         if ($debug == 1) { ss_pppoetraffic_LOGGER('echo', "User not found, exit.\n"); }
         ss_pppoetraffic_LOGGER('file', "User is missing on table $lns for $username - exit.");
         return "in_traffic:0 out_traffic:0";
@@ -343,8 +343,8 @@ function ss_pppoetraffic ($hostname, $snmpversion, $username) {
 
     // Get interface counters.
     $counters = ss_pppoetraffic_SNMPGETDATA("counters", $snmp, $lns, $ifoid['oid']);
-    ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username, if ".$ifoid['oid'].", in ".$counters['in']." out ".$counters['out']);
     $oldcounters = ss_pppoetraffic_GETOLDCOUNTERS($username);
+    ss_pppoetraffic_LOGGER('file', "Get Request on $lns for $username, if ".$ifoid['oid'].", in ".$counters['in']." out ".$counters['out']);
     if ( $counters['in'] == '0' && $counters['out'] == '0' ) {
         ss_pppoetraffic_LOGGER('file', "Zero counters for $username");
         $counters = $oldcounters;
