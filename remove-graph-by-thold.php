@@ -18,7 +18,7 @@ $abovethold = db_fetch_assoc("SELECT * FROM thold_data
 
 foreach ($abovethold as $thold) {
     $gid = $thold['graph_id'];
-    $ids = db_fetch_row("SELECT  DISTINCT(GTG.local_graph_id), DTD.local_data_id, DID.value
+    $ids = db_fetch_row("SELECT  DISTINCT(GTG.local_graph_id), DTD.local_data_id, DID.value, DTD.data_source_path
                         FROM (data_template_data DTD, data_template_rrd DTR, graph_templates_item GTI, graph_templates_graph GTG, data_input_data DID)
                         WHERE GTI.task_item_id=DTR.id
                         AND DTR.local_data_id=DTD.local_data_id
@@ -31,14 +31,17 @@ foreach ($abovethold as $thold) {
                         ORDER by GTG.local_graph_id asc;");
 
     $username = $ids['value'];
+    @list(,$rrd) = @explode("/", $ids['data_source_path']);
     $did = $ids['local_data_id'];
 
-    echo "removing $username $did $gid\n";
+    echo "Removing $did $gid for $username, archiving $rrd\n";
     /* Do the actual removes */
     api_data_source_remove($did);
     api_graph_remove($gid);
+    //move rrd to archive
+    db_execute("INSERT INTO plugin_rrdclean_action(name, action) VALUES('$rrd', '3')");
 
-    // break after first removel, for test env.
+    // break after first removal, for test env.
     break;
 }
 
