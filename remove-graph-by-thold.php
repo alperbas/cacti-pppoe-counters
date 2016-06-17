@@ -5,7 +5,7 @@ It delets graphs for pppoe users which did not generate traffic for a period of 
 
 */
 
-include(dirname(__FILE__)."/../include/global.php");
+include(dirname(__FILE__)."/../../include/global.php");
 include_once($config["base_path"]."/lib/api_automation_tools.php");
 include_once($config["base_path"]."/lib/api_data_source.php");
 include_once($config["base_path"]."/lib/api_graph.php");
