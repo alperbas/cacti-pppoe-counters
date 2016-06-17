@@ -46,7 +46,7 @@ foreach ($abovethold as $thold) {
     db_execute("INSERT INTO plugin_rrdclean_action(name, action) VALUES('$rrd', '3')");
 
     // break after first removal, for test env.
-    break;
+    //break;
 }
 
 ?>
